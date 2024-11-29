@@ -1,0 +1,249 @@
+\documentclass{ufscThesis}
+
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage[labelsep=endash]{caption}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\newcommand\xmark{\huge{$\times$}}
+
+\titulo{Definição de uma heurística para o problema de roteamento de veículos elétricos com restrições de capacidade e peso}
+\autor{Erik Orsolin de Paula}
+\data{04}{setembro}{2024}
+
+\orientador{Prof. Dr. Rafael de Santiago}
+
+\departamento[a]{DEPARTAMENTO DE INFORMÁTICA E ESTATÍSTICA}
+
+\dedicatoria{Dedico este projeto à minha mãe, que, com sua sabedoria e amor, me ensinou que a educação é o maior presente que alguém pode receber. Sua paciência, apoio e dedicação incansáveis me deram as condições de sonhar e alcançar meus objetivos. Sua confiança em mim foi a força que me guiou até aqui, e este trabalho é apenas uma pequena parte do que devo a você. Obrigado por me mostrar que eu poderia ser tudo o que eu quisesse.}
+
+\epigrafe{?}
+
+\textoResumo{Problemas de roteamento de veículos não são, de forma alguma, um tema novo. Otimizar rotas para atender clientes de maneira eficiente é um desafio antigo, presente em diferentes contextos logísticos: desde a entrega de mercadorias em cidades até a distribuição de cargas em zonas rurais. No entanto, a transição para veículos elétricos traz novas complexidades, como restrições de autonomia e a influência do peso transportado no consumo energético. Essas características tornam o problema ainda mais desafiador, exigindo soluções adaptadas à realidade dessas frotas.
+
+Nesse contexto, este trabalho tem como objetivo propor e implementar uma heurística para a otimização de rotas em uma variante do Problema de Roteamento de Veículos Elétricos com Restrições de Capacidade e Peso (E-VRPCW). Para isso, pretende-se: revisar a literatura sobre o E-VRPCW e problemas relacionados; identificar metodologias existentes que possam ser adaptadas; propor e desenvolver uma heurística computacional para a variante estudada; e avaliar a solução em cenários práticos simulados.}
+
+\palavrasChave {Veículos, Roteamento, Heurísticas, Elétricos, Capacidade, Peso}
+
+\textAbstract {Vehicle routing problems are by no means a new topic. Optimizing routes to efficiently serve customers is a longstanding challenge, present in various logistical contexts: from urban goods delivery to rural cargo distribution. However, the transition to electric vehicles introduces new complexities, such as range constraints and the impact of transported weight on energy consumption. These characteristics make the problem even more challenging, requiring solutions tailored to the realities of electric fleets.
+
+In this context, this work aims to propose and implement a heuristic for route optimization in a variant of the Electric Vehicle Routing Problem with Capacity and Weight Constraints (E-VRPCW). To achieve this, the study will: review the literature on E-VRPCW and related problems; identify existing methodologies that can be adapted; propose and develop a computational heuristic for the studied variant; and evaluate the solution in simulated practical scenarios.}
+
+\keywords {Vehicles, Routing, Heuristics, Electric, Capacity, Weight}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Início do documento                                
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%--------------------------------------------------------
+% Elementos pré-textuais
+\capa
+%\folhaderosto
+\paginadedicatoria
+%\paginaagradecimento
+%\paginaepigrafe
+\paginaresumo
+\paginaabstract
+
+\chapter*{FOLHA DE APROVAÇÃO DE PROPOSTA DE TCC}
+\begin{table}[H]
+	\begin{tabular}{|c|p{12cm}|}
+		\hline
+		\textbf{Acadêmico(s)} & \multicolumn{1}{c|}{Erik Orsolin de Paula}\\\hline
+		\textbf{Título do Trabalho} & Definição de uma heurística para o problema de roteamento de veículos elétricos com restrições de capacidade e peso\\\hline
+		\textbf{Curso} & \multicolumn{1}{c|}{Ciências da Computação /INE/UFSC}\\\hline
+		\textbf{Área de Concentração} & \multicolumn{1}{c|}{Algoritmos e Otimização}\\\hline
+	\end{tabular}
+\end{table}
+
+\noindent \textbf{Instruções para preenchimento pelo \underline{ORIENTADOR DO}\\\underline{TRABALHO}}
+	\begin{itemize}
+		\item[-]Para cada critério avaliado, assinale um X na coluna SIM apenas se considerado aprovado. Caso contrário, indique as alterações necessárias na coluna Observação.
+	\end{itemize}
+
+\newpage
+\begin{table}[H]
+	{\small
+	\begin{tabular}{|p{5cm}|c|c|c|c|p{6cm}|}
+		\hline
+		\multicolumn{1}{|c|}{\multirow{2}{*}[-10pt]{\textbf{Critérios}}} & \multicolumn{4}{c|}{\textbf{Aprovado}} & \multicolumn{1}{c|}{\textbf{Observação}}\\\cline{2-6}
+		& \multirow{1}{*}[-10pt]{Sim} & \multirow{1}{*}[-10pt]{Parcial} & \multirow{1}{*}[-10pt]{Não} & \multicolumn{1}{p{1.5cm}|}{Não se aplica} & \\\hline
+			
+		1. O trabalho é adequado para um TCC no CCO/SIN (relevância / abrangência)? & & & & &\\\hline
+		
+		2. O titulo do trabalho é adequado? & & & & &\\\hline
+
+		3. O tema de pesquisa está claramente descrito? & & & & &\\\hline
+
+		4. O problema/hipóteses de pesquisa do trabalho está claramente identificado? & & & & &\\\hline
+
+		5. A relevância da pesquisa é justificada? & & & & &\\\hline
+
+		6. Os objetivos descrevem completa e claramente o que se pretende alcançar neste trabalho? & & & & &\\\hline
+			
+		7. É definido o método a ser adotado no trabalho? O método condiz com os objetivos e é adequado para um TCC? & & & & &\\\hline
+		
+		8. Foi definido um cronograma coerente com o método definido (indicando todas as atividades) e com as datas das entregas (p.ex. Projeto I, II, Defesa)? & & & & &\\\hline
+			
+		9. Foram identificados custos relativos à execução deste trabalho (se houver)? Haverá financiamento para estes custos? & & & & &\\\hline
+			 
+		10. Foram identificados todos os envolvidos neste trabalho? & & & & &\\\hline
+
+		11. As formas de comunicação foram definidas (ex: horários para orientação)? & & & & &\\\hline
+
+		12. Riscos potenciais que podem causar desvios do plano foram identificados? & & & & &\\\hline
+
+		13. Caso o TCC envolva a produção de um software ou outro tipo de produto e seja desenvolvido também como uma atividade realizada numa empresa ou laboratório, consta da proposta uma declaração (Anexo 3) de ciência e concordância com a entrega do código fonte e/ou documentação produzidos? & & & & &\\\hline
+	\end{tabular}
+	}
+\end{table}
+\newpage
+\begin{table}[H] 
+{
+	\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Avaliação} & \multicolumn{1}{c}{$\hspace{-.2cm}\Box$ Aprovado} & \multicolumn{2}{c|}{$\hspace{-.2cm}\Box$ Não Aprovado}\\\hline
+\textbf{Professor Responsável} & Prof. Dr. Rafael de Santiago &  &\hspace{3.3cm} \\\hline	
+	\end{tabular}
+}
+\end{table}
+
+
+%\listadesimbolos
+\sumario
+
+%--------------------------------------------------------
+% Elementos textuais
+
+\chapter{INTRODUÇÃO}
+
+O sistema logístico global desempenha um papel central tanto na economia quanto na sociedade. O setor de transporte, além de ser um dos pilares econômicos de diversos países, é também responsável por um impacto ambiental significativo. Em 2010, mais de 70\% das emissões de gases poluentes tinham origem no transporte rodoviário (SIMS et al., 2014). Para mitigar tais impactos, diversos países têm adotado medidas como a substituição gradual de veículos movidos à combustão por veículos elétricos. Exemplos incluem nações europeias como Noruega, Holanda e Alemanha, que já estabeleceram prazos para a proibição da circulação de veículos movidos a combustíveis fósseis (SILVA, 2020).
+
+Com a crescente adoção de frotas elétricas, surge o desafio de desenvolver modelos e soluções que considerem as especificidades dessa tecnologia, como autonomia limitada, disponibilidade de estações de recarga e o impacto do peso da carga transportada sobre o consumo energético. A geração de rotas eficientes (em termos de custo e consumo energético) para veículos elétricos é um problema desafiador, que amplia as complexidades do tradicional Problema de Roteamento de Veículos (VRP), proposto inicialmente por Dantzig e Ramser (1959). Desde então, o VRP tem se diversificado em uma vasta gama de variantes práticas (LAPORTE, 1992; ADEWUMI; ADELEKE, 2018).
+
+Entre as variantes emergentes, destaca-se o Problema de Roteamento de Veículos Elétricos com Restrições de Capacidade e Peso (E-VRPCW). Essa variante incorpora a consideração do peso das cargas transportadas, fator que afeta diretamente a autonomia dos veículos elétricos e, consequentemente, o planejamento logístico, além de levar em conta a quantidade máxima de itens suportados pelo veículo. Rotas definidas sem levar em conta o impacto do peso podem resultar em custos elevados, paradas adicionais para recarga ou até inviabilidade operacional. A relevância dessa abordagem está alinhada com os Objetivos de Desenvolvimento Sustentável da ONU, promovendo soluções que incentivem a adoção de tecnologias limpas.
+
+O objetivo deste trabalho é propor e avaliar uma heurística para a resolução do E-VRPCW, levando em conta não apenas as restrições tradicionais, mas também o impacto do peso das cargas na autonomia dos veículos elétricos. A heurística será desenvolvida com base em abordagens bem estabelecidas na literatura, mas adaptada para lidar com as características específicas dessa variante.
+
+
+
+\section{OBJETIVOS}
+
+    Esta seção apresenta o objetivo geral e objetivos específicos deste trabalho.
+
+	\subsection{OBJETIVO GERAL}
+	
+	Especificar uma heurística computacional para lidar com o problema do roteamento de veículos elétricos com restrições de capacidade e peso.
+	
+    \subsection{OBJETIVOS ESPECÍFICOS}  
+    Para atingir o objetivo geral, pretende-se cumprir os seguintes objetivos específicos:  
+    \begin{itemize}  
+        \item Levantar e revisar soluções existentes para o problema de roteamento de veículos elétricos e suas variantes;  
+        
+        \item Identificar metodologias que considerem restrições de capacidade e peso;  
+        
+        \item Definir uma abordagem heurística para lidar com o impacto do peso das cargas transportadas no consumo energético;  
+        
+        \item Especificar e implementar a heurística computacional proposta;  
+        
+        \item Avaliar os resultados da heurística com base em experimentos controlados e cenários simulados;  
+        
+        \item Redigir o documento da monografia.  
+    \end{itemize}
+
+
+
+\chapter{MÉTODO DE PESQUISA}
+Este trabalho trata de uma pesquisa exploratória e quantitativa, pois busca especificar uma heurística computacional para o problema de empacotamento tridimensional e analisar os dados obtidos a partir de experimentos, visando identificar qualidade obtida e tempo requirido.
+
+Para desenvolver a pesquisa, pretende-se executar as seguintes etapas:
+
+Inicialmente, um levantamento teórico do estado da arte em relação a empacotamento tridimensional e problemas de corte no geral, através de uma pesquisa bibliográfica utilizando a literatura disponível.
+
+Concluída a análise teórica, a heurística será melhor definida, tanto em termos de sua definição literária, através da monografia que seguirá esta, quanto em questões de implementação de software.
+
+Na etapa seguinte, a heurística será efetivamente implementada, correções necessárias serão aplicadas e a monografia englobará as decisões tomadas durante o processo de desenvolvimento.
+
+Por fim, os resultados serão analisados, utilizando-se de benchmarks contra heurísticas já definidas para a solução do mesmo problema para que possa-se analisar a qualidade e velocidade da heurística desenvolvida.
+
+
+Por ser uma pesquisa que não envolve seres humanos ou animais, não necessita de apreciação por comitê de ética.
+
+\chapter{ESTRUTURA DO TRABALHO}
+Este trabalho de conclusão de curso foi estruturado baseando-se nos procedimentos para normalização de trabalhos acadêmicos, conforme as regras da Associação Brasileira de Normas Técnicas (ABNT) e documentos disponilizados pela Biblioteca Universitária\footnote{http://portal.bu.ufsc.br/normalizacao/} da Universidade Federal de Santa Catarina (UFSC).
+
+\chapter{CRONOGRAMA}
+
+\begin{table}[H]
+    \resizebox{\textwidth}{!}{
+	\begin{tabular}{|p{1.5cm}|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+	\hline
+	\multicolumn{1}{|c|}{\multirow{3}{*}{\textbf{Atividade}}} & \multicolumn{1}{|c|}{\textbf{2024}} & \multicolumn{12}{|c|}{\textbf{2026}}\\ \cline{2-14}
+	
+	 & Set & Out & Nov & Dez & Abr & Mai & Jun & Jul & Ago & Set & Out & Nov & Dez \\ \cline{2-14}
+	
+	& \multicolumn{4}{|c|}{\textbf{Introdução ao Trabalho de Conclusão de Curso}} & \multicolumn{5}{|c|}{\textbf{Trabalho de Conclusão de Curso I}} & \multicolumn{4}{|c|}{\textbf{Trabalho de Conclusão de Curso II}}\\ \hline
+	
+	1. Definição do Orientador e tema do TCC & \xmark & & & & & & & & & & & &\\ \hline
+	2. Revisão da Literatura & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & & & & & & &\\ \hline
+	3. \textbf{Entrega da proposta}  & & & & \xmark & & & & & & & & &\\ \hline
+	4. Especificação da heurística & & & & & & \xmark &  & & & & & &\\ \hline
+	5. Desenvolvimento da heurística & & & & & & & \xmark & \xmark & \xmark & & & &\\ \hline
+	6. Análise dos resultados & & & & & & & & & \xmark & & & &\\ \hline
+	7. \textbf{Entrega TCC 1}  & & & & & & & & & \xmark & & & &\\ \hline
+	7. Ajustes na heurística & & & & & & & & & & \xmark & \xmark & &\\ \hline
+	8. Escrita da Monografia & & & & &  & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &\\ \hline
+	9. \textbf{Entrega TCC 2}  & & & & & & & & & & & & & \xmark\\ \hline
+	\end{tabular}
+    }
+\end{table}
+
+\chapter{CUSTOS}
+	Não haverá custos pois o autor já tem posse sobre os recursos necessários para a elaboração do trabalho de conclusão de curso. 
+
+\chapter{RECURSOS HUMANOS}
+\begin{center}
+	\begin{table}[ht]
+	\centering
+		\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Nome} & \textbf{Função}\\\hline
+		Erik Orsolin de Paula & Autor\\\hline
+		Rafael de Santiago & Orientador\\\hline
+		Pedro Belin Castellucci & Coorientador\\\hline
+		\end{tabular}
+	\end{table}
+\end{center}
+
+\chapter{RISCOS}
+	\begin{table}[H]
+		\begin{tabular}{|p{2cm}|c|c|c|p{2cm}|p{5cm}|}
+			\hline
+			\textbf{Risco} & \textbf{Probabilidade} & \textbf{Impacto} & \textbf{Prioridade} & \textbf{Estratégia de Resposta} & \textbf{Ações de Prevenção}\\\hline
+			Atrasar o projeto & Baixa & Alto & Alta & Replanejar o cronograma & Seguir a risca o planejamento\\
+			\hline
+		    Soluções não apresentarem  benchmarks para comparação & Baixa & Alto & Alta & Buscar outros artigos que sejam compatíveis  & Analisar minuciosamente  os artigos levantados durante a pesquisa\\\hline
+			
+		\end{tabular}
+	\end{table}
+
+\begin{thebibliography}{99}
+
+\bibitem{SIMS2014}
+SIMS, R. et al. Climate Change 2014: Mitigation of Climate Change. In: EDENHOFER, O. et al. (Ed.). *Working Group III Contribution to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change*. Cambridge, United Kingdom and New York, NY, USA: Cambridge University Press, 2014. cap. 8, p. 599–670.
+
+\bibitem{SILVA2020}
+SILVA, A. V. d. *Problema de Roteamento de Veículos Elétricos: otimização da vida útil das baterias*. Dissertação (Mestrado) — Universidade de São Paulo, 2020.
+
+\bibitem{LAPORTE1992}
+LAPORTE, G. The vehicle routing problem: An overview of exact and approximate algorithms. *European Journal of Operational Research*, Elsevier, v. 59, n. 3, p. 345–358, 1992.
+
+\bibitem{DANTZIG1959}
+DANTZIG, G. B.; RAMSER, J. H. The truck dispatching problem. *Management Science*, Informs, v. 6, n. 1, p. 80–91, 1959.
+
+\end{thebibliography}
+
+\end{document}
